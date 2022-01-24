@@ -1,0 +1,17 @@
+server:
+  port: 19999
+#runtime:cpu运行时间,30 表示30分钟
+#rate:cpu占用比例，默认50，即cpu使用率50%
+cpu:
+  enable: true
+  rate: 50
+  runtime: 30
+  schedule: 0 */1 * * * ?
+
+
+#rate表示内存占用的百分比，默认60，即内存占用60%
+mem:
+  enable: true
+  rate: 60
+  runtime: 1
+  schedule: 0 32 12 * * ?
