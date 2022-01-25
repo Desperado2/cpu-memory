@@ -15,6 +15,10 @@ public class CpuThread extends Thread{
     private Integer rate;
     private long runtime;
     private String enable;
+    /**
+     * 定时任务间隔时间
+     */
+    private long betweenTime;
 
     @Override
     public void run() {
@@ -31,7 +35,7 @@ public class CpuThread extends Thread{
             int busyTime = needToUseRate*10;
             int idleTime = 1000 - busyTime;
             long startTime = System.currentTimeMillis();
-            if ((startTime - start) > runtime) {
+            if ((startTime - start) > runtime || (startTime - start) > betweenTime) {
                 break;
             }
             while((System.currentTimeMillis() - startTime)<=busyTime);
@@ -44,6 +48,7 @@ public class CpuThread extends Thread{
                 e.printStackTrace();
             }
         }
+        log.info("cpu定时任务结束！");
     }
 
 
@@ -70,5 +75,13 @@ public class CpuThread extends Thread{
 
     public void setEnable(String enable) {
         this.enable = enable;
+    }
+
+    public long getBetweenTime() {
+        return betweenTime;
+    }
+
+    public void setBetweenTime(long betweenTime) {
+        this.betweenTime = betweenTime;
     }
 }

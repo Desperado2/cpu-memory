@@ -5,7 +5,7 @@ server:
 cpu:
   enable: true
   rate: 50
-  runtime: 30
+  runtime: 1
   schedule: 0 */1 * * * ?
 
 

@@ -5,12 +5,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.support.CronExpression;
+import org.springframework.scheduling.support.CronSequenceGenerator;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 /**
@@ -29,6 +33,8 @@ public class CpuImproveTask {
     private String rate;
     @Value("${cpu.runtime}")
     private String runtime;
+    @Value("${cpu.schedule}")
+    private String cpuSchedule;
 
     private static final int CPUTIME = 500;
 
@@ -43,6 +49,7 @@ public class CpuImproveTask {
 
     @Scheduled(cron = "${cpu.schedule}")
     public void improveCupRate() {
+        log.info("cpu定时任务启动！");
         if (!"true".equals(enable)) {
             return;
         }
@@ -50,6 +57,15 @@ public class CpuImproveTask {
         if (iRate > 80) {
             return;
         }
+        CronExpression cronExpression = CronExpression.parse(cpuSchedule);
+        //下次预计的执行时间
+        LocalDateTime nextFirst = cronExpression.next(LocalDateTime.now());
+        //下下次预计的执行时间
+        LocalDateTime nextSecond = cronExpression.next(nextFirst);
+        //计算周期
+        long between = ChronoUnit.SECONDS.between(nextFirst, nextSecond);
+        //间隔时间减去10秒，防止多个CpuThread同时运行，将cpu打满
+        long betweenTime = (between - 10) * 1000;
         int cpuCount = Runtime.getRuntime().availableProcessors();
         long lRuntime = Long.parseLong(runtime);
         lRuntime = lRuntime*60*1000;
@@ -58,6 +74,7 @@ public class CpuImproveTask {
             thread.setEnable(enable);
             thread.setRate(iRate);
             thread.setRuntime(lRuntime);
+            thread.setBetweenTime(betweenTime);
             thread.start();
         }
     }

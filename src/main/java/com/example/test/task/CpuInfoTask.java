@@ -33,7 +33,7 @@ public class CpuInfoTask {
     @Value("${mem.enable}")
     private String memEnable;
 
-    private static final int CPUTIME = 500;
+    private static final int CPUTIME = 5*1000;
 
     private static final int PERCENT = 100;
 
@@ -53,7 +53,7 @@ public class CpuInfoTask {
             int cpuRate = getCpuRate();
             int lastRate = Constants.ENV_MAP.get(Constants.CUR_CPU_NEED_USED_RATE) == null ? 0 : Constants.ENV_MAP.get(Constants.CUR_CPU_NEED_USED_RATE);
             Integer iRate = Integer.parseInt(rate);
-            int curNeedUsedRate = iRate - cpuRate + lastRate;
+            int curNeedUsedRate = iRate - cpuRate;
             if (curNeedUsedRate < 0) {
                 curNeedUsedRate = 0;
             }
